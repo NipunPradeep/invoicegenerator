@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice Generator - Innovax Pvt Ltd</title>
+  <style>
+    :root {
+      --primary: #0f172a;
+      --accent: #2563eb;
+      --text: #334155;
+      --bg: #f8fafc;
+      --border: #e2e8f0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .toolbar {
+      width: 100%;
+      max-width: 850px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn {
+      background-color: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background-color: #1d4ed8;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background-color: #e2e8f0;
+      color: #334155;
+      box-shadow: none;
+    }
+
+    .btn-secondary:hover {
+      background-color: #cbd5e1;
+    }
+
+    .invoice-card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 850px;
+      padding: 3rem;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+      border: 1px solid var(--border);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .company-details h1 {
+      font-size: 1.75rem;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+    }
+
+    .company-details p {
+      font-size: 0.875rem;
+      color: #64748b;
+      line-height: 1.4;
+    }
+
+    .invoice-title {
+      text-align: right;
+    }
+
+    .invoice-title h2 {
+      font-size: 2.25rem;
+      color: var(--accent);
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+    }
+
+    .meta-group {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      align-items: center;
+      margin-bottom: 0.4rem;
+      font-size: 0.9rem;
+    }
+
+    .meta-group label {
+      font-weight: 600;
+      color: #64748b;
+    }
+
+    .meta-group input {
+      border: 1px solid var(--border);
+      padding: 0.3rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      color: var(--text);
+      outline: none;
+    }
+
+    .readonly-field {
+      background-color: #f1f5f9;
+      border-color: transparent !important;
+      font-weight: 600;
+    }
+
+    .bill-to {
+      margin-bottom: 2rem;
+    }
+
+    .bill-to h3 {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748b;
+      margin-bottom: 0.5rem;
+    }
+
+    .bill-to textarea {
+      width: 50%;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.75rem;
+      font-size: 0.95rem;
+      resize: vertical;
+      outline: none;
+      min-height: 80px;
+    }
+
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 2rem;
+    }
+
+    .items-table th {
+      background-color: #f8fafc;
+      color: #475569;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .items-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .items-table input {
+      width: 100%;
+      border: 1px solid var(--border);
+      padding: 0.5rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .items-table input:focus {
+      border-color: var(--accent);
+    }
+
+    .text-right {
+      text-align: right;
+    }
+
+    .action-col {
+      width: 40px;
+      text-align: center;
+    }
+
+    .btn-delete {
+      background: none;
+      border: none;
+      color: #ef4444;
+      font-size: 1.2rem;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .summary-section {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+
+    .bank-details {
+      width: 55%;
+      background: #f8fafc;
+      padding: 1.25rem;
+      border-radius: 6px;
+      border: 1px dashed var(--border);
+    }
+
+    .bank-details h4 {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .bank-details p {
+      font-size: 0.875rem;
+      line-height: 1.5;
+      color: #475569;
+    }
+
+    .totals {
+      width: 38%;
+    }
+
+    .totals-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.4rem 0;
+      font-size: 0.95rem;
+    }
+
+    .totals-row.grand-total {
+      border-top: 2px solid var(--primary);
+      margin-top: 0.5rem;
+      padding-top: 0.75rem;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--primary);
+    }
+
+    .discount-input {
+      width: 100px;
+      text-align: right;
+      padding: 0.25rem 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+    }
+
+    .policies-section {
+      background: #f8fafc;
+      padding: 1rem 1.25rem;
+      border-radius: 6px;
+      margin-bottom: 2rem;
+      border-left: 3px solid var(--accent);
+    }
+
+    .policies-section h4 {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+      margin-bottom: 0.4rem;
+    }
+
+    .policies-section ul {
+      padding-left: 1.2rem;
+      font-size: 0.825rem;
+      color: #64748b;
+      line-height: 1.5;
+    }
+
+    .footer {
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 0.85rem;
+    }
+
+    /* Print styling to hide headers, footers (file path, date/time, URL) and browser metadata */
+    @page {
+      margin: 0;
+      size: auto;
+    }
+
+    @media print {
+      body {
+        background-color: #fff;
+        padding: 20mm;
+      }
+
+      .toolbar, .action-col {
+        display: none !important;
+      }
+
+      .invoice-card {
+        border: none;
+        box-shadow: none;
+        padding: 0;
+        width: 100%;
+        max-width: 100%;
+      }
+
+      input, textarea {
+        border: none !important;
+        background: transparent !important;
+        padding: 0 !important;
+      }
+
+      textarea {
+        resize: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <button class="btn btn-secondary" onclick="addRow()">+ Add Line Item</button>
+    <button class="btn" onclick="exportPDF()">Print / Save PDF</button>
+  </div>
+
+  <div class="invoice-card" id="invoice">
+    <div class="header">
+      <div class="company-details">
+        <h1>innovax pvt ltd</h1>
+        <p>Website: innovax.lk</p>
+        <p>Email: contact@innovax.lk</p>
+        <p>Email: nipunpradeep19@gmail.com</p>
+	<p>Phone: +94 77 215 4067</p>
+
+      </div>
+      <div class="invoice-title">
+        <h2>INVOICE</h2>
+        <div class="meta-group">
+          <label>Invoice:</label>
+          <input type="text" id="invoiceNum" value="INV-000001" class="readonly-field" readonly>
+        </div>
+        <div class="meta-group">
+          <label>Date:</label>
+          <input type="date" id="invoiceDate">
+        </div>
+      </div>
+    </div>
+
+    <div class="bill-to">
+      <h3>Bill To</h3>
+      <textarea id="billTo" placeholder="Client Name / Company&#10;Address Line 1&#10;City, Country"></textarea>
+    </div>
+
+    <table class="items-table">
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th style="width: 140px;" class="text-right">Price (LKR)</th>
+          <th style="width: 160px;" class="text-right">Amount (LKR)</th>
+          <th class="action-col"></th>
+        </tr>
+      </thead>
+      <tbody id="itemsBody">
+        <tr>
+          <td><input type="text" placeholder="Item description"></td>
+          <td><input type="number" class="text-right price-input" placeholder="0.00" oninput="calculateTotals()"></td>
+          <td class="text-right line-amount">0.00</td>
+          <td class="action-col"><button class="btn-delete" onclick="removeRow(this)">×</button></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="summary-section">
+      <div class="bank-details">
+        <h4>Bank Details for Transfer</h4>
+        <p><strong>Bank:</strong> Bank of Ceylon</p>
+        <p><strong>Account Number:</strong> 6305605</p>
+        <p><strong>Account Name:</strong> H W N P Warunakumara</p>
+      </div>
+
+      <div class="totals">
+        <div class="totals-row">
+          <span>Subtotal</span>
+          <span id="subtotal">LKR 0.00</span>
+        </div>
+        <div class="totals-row">
+          <span>Discount (LKR)</span>
+          <input type="number" id="discountInput" class="discount-input" placeholder="0.00" min="0" oninput="calculateTotals()">
+        </div>
+        <div class="totals-row grand-total">
+          <span>Total</span>
+          <span id="grandTotal">LKR 0.00</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="policies-section">
+      <h4>Payment Policies</h4>
+      <ul>
+        <li><strong>Milestone Payment Schedule:</strong> 40% Advance Payment for Confirmation, 40% upon Demo Approval, and 20% at Final Launch.</li>
+        <li>Payments are due within 14 days from the date of invoice issuance.</li>
+        <li>Please include the Invoice Number (INV-XXXXXX) as a reference in your bank transfer description.</li>
+        <li>Overdue payments may be subject to a 2% monthly late fee.</li>
+      </ul>
+    </div>
+
+    <div class="footer">
+      <p>Thank you for your business with Innovax Pvt Ltd!</p>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById("invoiceDate").value = today;
+      calculateTotals();
+    });
+
+    function addRow() {
+      const tbody = document.getElementById("itemsBody");
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td><input type="text" placeholder="Item description"></td>
+        <td><input type="number" class="text-right price-input" placeholder="0.00" oninput="calculateTotals()"></td>
+        <td class="text-right line-amount">0.00</td>
+        <td class="action-col"><button class="btn-delete" onclick="removeRow(this)">×</button></td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    function removeRow(btn) {
+      if (document.querySelectorAll("#itemsBody tr").length > 1) {
+        btn.parentElement.parentElement.remove();
+        calculateTotals();
+      }
+    }
+
+    function calculateTotals() {
+      const prices = document.querySelectorAll(".price-input");
+      const lineAmounts = document.querySelectorAll(".line-amount");
+      let subtotal = 0;
+
+      prices.forEach((input, index) => {
+        const val = parseFloat(input.value) || 0;
+        subtotal += val;
+        lineAmounts[index].textContent = val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      });
+
+      const discount = parseFloat(document.getElementById("discountInput").value) || 0;
+      const total = Math.max(0, subtotal - discount);
+
+      document.getElementById("subtotal").textContent = "LKR " + subtotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById("grandTotal").textContent = "LKR " + total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function exportPDF() {
+      window.print();
+    }
+  </script>
+</body>
+</html>
